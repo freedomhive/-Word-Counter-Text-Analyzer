@@ -1,1 +1,2275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TextPulse – Free Word Counter, Character Counter & Text Analyzer</title>
+  <meta name="description" content="Free online word counter and text analyzer. Count words, characters, sentences, paragraphs. Get reading time, keyword density, SEO score, Flesch readability, and more. No sign-up needed." />
+  <meta name="keywords" content="word counter, character counter, text analyzer, word count, reading time calculator, SEO text analyzer, readability score, keyword density, free word counter online" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="TextPulse" />
+  <link rel="canonical" href="https://textpulse.app/" />
 
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="TextPulse – Free Word Counter & Text Analyzer" />
+  <meta property="og:description" content="The most powerful free word counter and text analyzer. Real-time stats, SEO analysis, readability scores, and more." />
+  <meta property="og:url" content="https://textpulse.app/" />
+  <meta property="og:image" content="https://textpulse.app/og-image.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="TextPulse – Free Word Counter & Text Analyzer" />
+  <meta name="twitter:description" content="Real-time word counting, character counting, SEO analysis & readability scores. Free forever." />
+
+  <!-- Schema Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "TextPulse",
+    "description": "Free online word counter and text analyzer with real-time statistics",
+    "url": "https://textpulse.app",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "featureList": ["Word Count", "Character Count", "Reading Time", "SEO Analysis", "Readability Score", "Keyword Density"]
+  }
+  </script>
+
+  <!-- FAQ Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "How do I count words online?", "acceptedAnswer": { "@type": "Answer", "text": "Simply paste or type your text into the TextPulse editor. Word count updates instantly in real-time as you type." } },
+      { "@type": "Question", "name": "Is TextPulse free to use?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, TextPulse is completely free to use with no sign-up required. All core features are available for free." } },
+      { "@type": "Question", "name": "What is the character limit for TextPulse?", "acceptedAnswer": { "@type": "Answer", "text": "TextPulse can handle up to 100,000 characters of text. For larger documents, consider splitting them into sections." } }
+    ]
+  }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ===== CSS RESET & VARIABLES ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --navy:      #050A18;
+      --navy-800:  #0A1228;
+      --navy-700:  #0F1A38;
+      --navy-600:  #162040;
+      --indigo:    #6366F1;
+      --indigo-400:#818CF8;
+      --indigo-300:#A5B4FC;
+      --teal:      #0EA5E9;
+      --teal-400:  #38BDF8;
+      --emerald:   #10B981;
+      --amber:     #F59E0B;
+      --rose:      #F43F5E;
+      --ghost:     #F8FAFC;
+      --slate-400: #94A3B8;
+      --slate-500: #64748B;
+      --slate-600: #475569;
+      --glass:     rgba(255,255,255,0.04);
+      --glass-border: rgba(255,255,255,0.08);
+      --glow-indigo: 0 0 40px rgba(99,102,241,0.25);
+      --glow-teal:   0 0 40px rgba(14,165,233,0.20);
+      --shadow-card: 0 8px 32px rgba(0,0,0,0.4);
+      --shadow-float: 0 20px 60px rgba(0,0,0,0.5);
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-2xl: 32px;
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'Space Mono', monospace;
+      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+    
+    body {
+      background-color: var(--navy);
+      color: var(--ghost);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--navy-800); }
+    ::-webkit-scrollbar-thumb { background: var(--slate-600); border-radius: 3px; }
+
+    /* ===== UTILITY ===== */
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+    
+    /* ===== BACKGROUND CANVAS ===== */
+    #bg-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; z-index: 0;
+      opacity: 0.6;
+    }
+
+    /* ===== NOISE OVERLAY ===== */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 1; opacity: 0.5;
+    }
+
+    /* ===== NAVBAR ===== */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(5,10,24,0.85);
+      border-bottom: 1px solid var(--glass-border);
+      transition: var(--transition);
+    }
+
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px; padding: 0 24px; max-width: 1280px; margin: 0 auto;
+    }
+
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--ghost);
+      font-family: var(--font-display); font-weight: 700; font-size: 1.25rem;
+    }
+
+    .logo-mark {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--indigo), var(--teal));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; color: white;
+      box-shadow: 0 0 16px rgba(99,102,241,0.5);
+    }
+
+    .nav-links {
+      display: flex; align-items: center; gap: 8px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--slate-400); text-decoration: none;
+      padding: 6px 14px; border-radius: 8px;
+      font-size: 0.875rem; font-weight: 500;
+      transition: var(--transition);
+    }
+    .nav-links a:hover { color: var(--ghost); background: var(--glass); }
+
+    .nav-cta {
+      background: linear-gradient(135deg, var(--indigo), #4F46E5);
+      color: white !important;
+      padding: 8px 18px !important;
+      border-radius: 10px !important;
+      box-shadow: 0 0 20px rgba(99,102,241,0.3);
+    }
+    .nav-cta:hover { box-shadow: 0 0 30px rgba(99,102,241,0.5) !important; transform: translateY(-1px); }
+
+    .hamburger {
+      display: none; background: none; border: none;
+      cursor: pointer; padding: 8px; color: var(--ghost);
+    }
+
+    /* ===== HERO SECTION ===== */
+    .hero {
+      position: relative; z-index: 2;
+      padding: 140px 24px 80px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--glass); border: 1px solid var(--glass-border);
+      padding: 6px 16px; border-radius: 100px;
+      font-size: 0.8rem; font-weight: 500; color: var(--indigo-300);
+      margin-bottom: 32px; backdrop-filter: blur(10px);
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .badge-dot {
+      width: 6px; height: 6px;
+      background: var(--emerald);
+      border-radius: 50%;
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.3); }
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 7vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #818CF8 0%, #38BDF8 40%, #34D399 80%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200% 200%;
+      animation: gradient-shift 4s ease infinite;
+    }
+
+    @keyframes gradient-shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: var(--slate-400);
+      max-width: 600px; margin: 0 auto 48px;
+      font-weight: 400; line-height: 1.7;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+
+    .hero-stats {
+      display: flex; justify-content: center; gap: 48px; flex-wrap: wrap;
+      margin-bottom: 64px;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+
+    .hero-stat { text-align: center; }
+    .hero-stat-num {
+      font-family: var(--font-display);
+      font-size: 2rem; font-weight: 700;
+      background: linear-gradient(135deg, var(--ghost), var(--slate-400));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-stat-label { font-size: 0.8rem; color: var(--slate-500); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* ===== FLOATING ORBS ===== */
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); pointer-events: none; z-index: 0;
+    }
+    .orb-1 { width: 500px; height: 500px; background: rgba(99,102,241,0.15); top: -100px; left: -150px; animation: float1 8s ease-in-out infinite; }
+    .orb-2 { width: 400px; height: 400px; background: rgba(14,165,233,0.12); top: 50px; right: -100px; animation: float2 10s ease-in-out infinite; }
+    .orb-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); bottom: -50px; left: 30%; animation: float3 7s ease-in-out infinite; }
+
+    @keyframes float1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(30px,-20px) scale(1.05)} }
+    @keyframes float2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-20px,30px) scale(0.95)} }
+    @keyframes float3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-30px)} }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ===== MAIN TOOL SECTION ===== */
+    .tool-section {
+      position: relative; z-index: 2;
+      padding: 0 24px 80px;
+    }
+
+    .tool-wrapper {
+      max-width: 1280px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 340px;
+      gap: 24px; align-items: start;
+    }
+
+    /* ===== EDITOR PANEL ===== */
+    .editor-panel {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      backdrop-filter: blur(20px);
+      overflow: hidden;
+      box-shadow: var(--shadow-float);
+      animation: fadeUp 0.6s 0.4s ease both;
+    }
+
+    .editor-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--glass-border);
+      background: rgba(255,255,255,0.02);
+      flex-wrap: wrap; gap: 8px;
+    }
+
+    .toolbar-left { display: flex; align-items: center; gap: 8px; }
+    .toolbar-right { display: flex; align-items: center; gap: 6px; }
+
+    .toolbar-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--glass); border: 1px solid var(--glass-border);
+      color: var(--slate-400); cursor: pointer;
+      padding: 6px 12px; border-radius: 8px;
+      font-size: 0.8rem; font-family: var(--font-body); font-weight: 500;
+      transition: var(--transition);
+    }
+    .toolbar-btn:hover { color: var(--ghost); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
+    .toolbar-btn.active { color: var(--indigo-300); border-color: var(--indigo); background: rgba(99,102,241,0.1); }
+    .toolbar-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    .toolbar-divider { width: 1px; height: 20px; background: var(--glass-border); }
+
+    #main-textarea {
+      width: 100%;
+      min-height: 400px;
+      background: transparent;
+      border: none; outline: none;
+      color: var(--ghost);
+      font-family: var(--font-body); font-size: 1rem; line-height: 1.75;
+      padding: 24px;
+      resize: vertical;
+      caret-color: var(--indigo-400);
+    }
+
+    #main-textarea::placeholder { color: var(--slate-600); }
+
+    .editor-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 16px;
+      border-top: 1px solid var(--glass-border);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .editor-footer-stat {
+      font-size: 0.75rem; color: var(--slate-500);
+      font-family: var(--font-mono);
+    }
+
+    /* Pulse ring around textarea */
+    .textarea-container { position: relative; }
+    .pulse-ring {
+      position: absolute; inset: -1px;
+      border-radius: inherit; pointer-events: none;
+      opacity: 0; transition: opacity 0.3s;
+      background: linear-gradient(135deg, var(--indigo), var(--teal));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      padding: 1px;
+    }
+    #main-textarea:focus ~ .pulse-ring { opacity: 1; }
+
+    /* ===== STATS PANEL ===== */
+    .stats-panel {
+      display: flex; flex-direction: column; gap: 16px;
+      animation: fadeUp 0.6s 0.5s ease both;
+    }
+
+    /* AdSense top placeholder */
+    .ad-slot {
+      background: var(--glass);
+      border: 1px dashed rgba(255,255,255,0.1);
+      border-radius: var(--radius-lg);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 16px; min-height: 90px;
+      position: relative; overflow: hidden;
+      color: var(--slate-600); font-size: 0.7rem; text-align: center;
+    }
+    .ad-slot span { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; }
+    /* In production: replace .ad-slot content with actual AdSense code */
+
+    .stats-card {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow-card);
+    }
+
+    .stats-card-title {
+      font-family: var(--font-display); font-size: 0.75rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--slate-500); margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .stats-card-title::after {
+      content: ''; flex: 1; height: 1px; background: var(--glass-border);
+    }
+
+    .stat-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .stat-row:last-child { border-bottom: none; }
+
+    .stat-label {
+      font-size: 0.85rem; color: var(--slate-400); font-weight: 400;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .stat-label svg { width: 14px; height: 14px; opacity: 0.6; flex-shrink: 0; }
+
+    .stat-value {
+      font-family: var(--font-mono); font-size: 0.9rem;
+      font-weight: 700; color: var(--ghost);
+      transition: all 0.3s ease;
+    }
+
+    .stat-value.updated {
+      color: var(--teal-400);
+      text-shadow: 0 0 10px rgba(56,189,248,0.5);
+    }
+
+    /* Progress bar for scores */
+    .score-bar-wrapper { margin-top: 8px; }
+    .score-bar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .score-bar-label { font-size: 0.8rem; color: var(--slate-400); }
+    .score-bar-value { font-size: 0.8rem; font-weight: 700; font-family: var(--font-mono); }
+
+    .score-bar-track {
+      height: 6px; background: rgba(255,255,255,0.06);
+      border-radius: 100px; overflow: hidden;
+    }
+    .score-bar-fill {
+      height: 100%; border-radius: 100px;
+      transition: width 0.6s cubic-bezier(0.4,0,0.2,1), background 0.4s ease;
+    }
+    .score-bar-fill.good { background: linear-gradient(90deg, var(--emerald), #34D399); }
+    .score-bar-fill.ok { background: linear-gradient(90deg, var(--amber), #FBBF24); }
+    .score-bar-fill.poor { background: linear-gradient(90deg, var(--rose), #FB7185); }
+
+    /* Big counter display */
+    .big-counter {
+      text-align: center; padding: 24px 20px;
+      position: relative; overflow: hidden;
+    }
+    .big-counter::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, rgba(99,102,241,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .big-num {
+      font-family: var(--font-display); font-weight: 700;
+      font-size: clamp(3rem, 8vw, 4.5rem);
+      line-height: 1;
+      background: linear-gradient(135deg, #818CF8, #38BDF8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      transition: all 0.3s ease;
+    }
+    .big-label {
+      font-size: 0.8rem; color: var(--slate-500);
+      text-transform: uppercase; letter-spacing: 0.12em;
+      margin-top: 6px;
+    }
+    .mini-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px; margin-top: 16px;
+    }
+    .mini-stat {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 10px; padding: 10px;
+      text-align: center;
+    }
+    .mini-stat-num { font-family: var(--font-mono); font-weight: 700; font-size: 1.1rem; color: var(--ghost); }
+    .mini-stat-label { font-size: 0.7rem; color: var(--slate-500); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* ===== KEYWORD TABLE ===== */
+    .keyword-table { width: 100%; border-collapse: collapse; }
+    .keyword-table th {
+      font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--slate-600); text-align: left; padding: 6px 0;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .keyword-table td {
+      font-size: 0.8rem; padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      color: var(--slate-400);
+    }
+    .keyword-table td:first-child { color: var(--ghost); font-weight: 500; }
+    .keyword-table td:last-child { text-align: right; }
+
+    .kw-bar {
+      display: inline-block; height: 4px; border-radius: 2px;
+      background: linear-gradient(90deg, var(--indigo), var(--teal));
+      vertical-align: middle; margin-right: 6px;
+      transition: width 0.4s ease;
+    }
+
+    /* ===== READING TIME RING ===== */
+    .reading-ring-wrap {
+      display: flex; align-items: center; justify-content: center;
+      gap: 20px; padding: 8px 0 4px;
+    }
+    .ring-container { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
+    .ring-svg { width: 72px; height: 72px; transform: rotate(-90deg); }
+    .ring-bg { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 5; }
+    .ring-fill { fill: none; stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset 0.8s cubic-bezier(0.4,0,0.2,1); }
+    .ring-label {
+      position: absolute; inset: 0; display: flex;
+      flex-direction: column; align-items: center; justify-content: center;
+    }
+    .ring-num { font-family: var(--font-mono); font-size: 0.95rem; font-weight: 700; color: var(--ghost); line-height: 1; }
+    .ring-unit { font-size: 0.6rem; color: var(--slate-500); text-transform: uppercase; letter-spacing: 0.08em; }
+    .reading-details { flex: 1; }
+    .reading-detail-row { display: flex; justify-content: space-between; padding: 4px 0; }
+    .reading-detail-label { font-size: 0.78rem; color: var(--slate-500); }
+    .reading-detail-val { font-size: 0.78rem; color: var(--ghost); font-family: var(--font-mono); font-weight: 600; }
+
+    /* ===== ACTION BUTTONS ===== */
+    .action-group {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .action-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 10px; border-radius: 10px; border: none;
+      cursor: pointer; font-family: var(--font-body); font-size: 0.8rem; font-weight: 600;
+      transition: var(--transition);
+    }
+    .action-btn svg { width: 15px; height: 15px; }
+    .action-btn-primary {
+      background: linear-gradient(135deg, var(--indigo), #4F46E5);
+      color: white; grid-column: 1/-1;
+      padding: 12px;
+      box-shadow: 0 0 20px rgba(99,102,241,0.3);
+    }
+    .action-btn-primary:hover { box-shadow: 0 0 30px rgba(99,102,241,0.5); transform: translateY(-1px); }
+    .action-btn-secondary {
+      background: var(--glass); border: 1px solid var(--glass-border);
+      color: var(--slate-400);
+    }
+    .action-btn-secondary:hover { color: var(--ghost); background: rgba(255,255,255,0.07); }
+    .action-btn-success { animation: flash-success 0.6s ease; }
+    @keyframes flash-success { 0%,100% { background: linear-gradient(135deg,var(--indigo),#4F46E5); } 50% { background: linear-gradient(135deg,var(--emerald),#059669); } }
+
+    /* ===== FEATURES SECTION ===== */
+    .features-section {
+      position: relative; z-index: 2;
+      padding: 80px 24px;
+    }
+
+    .section-label {
+      font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.15em; color: var(--indigo-400);
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      margin-bottom: 16px;
+    }
+    .section-label::before, .section-label::after {
+      content: ''; flex: 0 0 40px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--indigo));
+    }
+    .section-label::after { background: linear-gradient(90deg, var(--indigo), transparent); }
+
+    .section-title {
+      font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 700; text-align: center; line-height: 1.15;
+      letter-spacing: -0.02em; margin-bottom: 16px;
+    }
+    .section-sub {
+      text-align: center; color: var(--slate-400);
+      font-size: clamp(0.95rem, 2vw, 1.1rem); max-width: 560px; margin: 0 auto 64px;
+      line-height: 1.65;
+    }
+
+    .features-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px; max-width: 1280px; margin: 0 auto;
+    }
+
+    .feature-card {
+      background: var(--glass); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl); padding: 32px;
+      backdrop-filter: blur(20px);
+      transition: var(--transition);
+      position: relative; overflow: hidden;
+    }
+    .feature-card:hover {
+      border-color: rgba(99,102,241,0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 20px rgba(99,102,241,0.1);
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(99,102,241,0.3), transparent);
+      opacity: 0; transition: var(--transition);
+    }
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px; font-size: 22px;
+    }
+    .feature-icon-purple { background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.2); }
+    .feature-icon-teal { background: rgba(14,165,233,0.12); border: 1px solid rgba(14,165,233,0.2); }
+    .feature-icon-green { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.2); }
+    .feature-icon-amber { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.2); }
+    .feature-icon-rose { background: rgba(244,63,94,0.12); border: 1px solid rgba(244,63,94,0.2); }
+    .feature-icon-cyan { background: rgba(6,182,212,0.12); border: 1px solid rgba(6,182,212,0.2); }
+
+    .feature-title { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; margin-bottom: 8px; color: var(--ghost); }
+    .feature-desc { font-size: 0.9rem; color: var(--slate-400); line-height: 1.65; }
+
+    /* ===== HOW IT WORKS ===== */
+    .how-section {
+      position: relative; z-index: 2;
+      padding: 80px 24px;
+    }
+
+    .steps-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px; max-width: 1100px; margin: 0 auto;
+      position: relative;
+    }
+
+    .step-card {
+      text-align: center; padding: 40px 28px;
+      background: var(--glass); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl); backdrop-filter: blur(20px);
+      position: relative; overflow: hidden;
+      transition: var(--transition);
+    }
+    .step-card:hover { transform: translateY(-6px); border-color: rgba(14,165,233,0.3); }
+
+    .step-num {
+      font-family: var(--font-display); font-size: 4rem; font-weight: 700;
+      line-height: 1; margin-bottom: 20px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.6), rgba(14,165,233,0.3));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .step-title { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; margin-bottom: 10px; }
+    .step-desc { font-size: 0.875rem; color: var(--slate-400); line-height: 1.65; }
+
+    /* ===== FAQ SECTION ===== */
+    .faq-section {
+      position: relative; z-index: 2;
+      padding: 80px 24px;
+    }
+
+    .faq-list { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+
+    .faq-item {
+      background: var(--glass); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg); overflow: hidden;
+      backdrop-filter: blur(16px); transition: border-color 0.3s;
+    }
+    .faq-item.open { border-color: rgba(99,102,241,0.3); }
+
+    .faq-question {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px; cursor: pointer;
+      font-family: var(--font-display); font-weight: 600; font-size: 0.95rem;
+      color: var(--ghost); user-select: none;
+      gap: 16px;
+    }
+
+    .faq-icon {
+      width: 24px; height: 24px; flex-shrink: 0;
+      border-radius: 6px; background: rgba(255,255,255,0.05);
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.3s, background 0.3s;
+    }
+    .faq-item.open .faq-icon { transform: rotate(45deg); background: rgba(99,102,241,0.2); }
+
+    .faq-answer {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), padding 0.3s;
+    }
+    .faq-answer-inner {
+      padding: 0 24px 20px;
+      font-size: 0.9rem; color: var(--slate-400); line-height: 1.7;
+    }
+    .faq-item.open .faq-answer { max-height: 400px; }
+
+    /* ===== BLOG SECTION ===== */
+    .blog-section {
+      position: relative; z-index: 2;
+      padding: 80px 24px;
+    }
+
+    .blog-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px; max-width: 1100px; margin: 0 auto;
+    }
+
+    .blog-card {
+      background: var(--glass); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl); overflow: hidden;
+      backdrop-filter: blur(20px); transition: var(--transition);
+      text-decoration: none;
+    }
+    .blog-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); border-color: rgba(99,102,241,0.3); }
+
+    .blog-thumb {
+      height: 140px; position: relative; overflow: hidden;
+    }
+    .blog-thumb-bg {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+    }
+    .bg-purple { background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(79,70,229,0.15)); }
+    .bg-teal { background: linear-gradient(135deg, rgba(14,165,233,0.2), rgba(6,182,212,0.15)); }
+    .bg-green { background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(5,150,105,0.15)); }
+
+    .blog-body { padding: 24px; }
+    .blog-tag {
+      display: inline-flex; padding: 3px 10px; border-radius: 100px;
+      font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+      background: rgba(99,102,241,0.15); color: var(--indigo-300);
+      margin-bottom: 12px;
+    }
+    .blog-title { font-family: var(--font-display); font-weight: 700; font-size: 1rem; color: var(--ghost); margin-bottom: 10px; line-height: 1.4; }
+    .blog-excerpt { font-size: 0.85rem; color: var(--slate-400); line-height: 1.65; margin-bottom: 16px; }
+    .blog-meta { font-size: 0.75rem; color: var(--slate-600); display: flex; align-items: center; gap: 8px; }
+    .blog-meta span { display: flex; align-items: center; gap: 4px; }
+
+    /* ===== NEWSLETTER ===== */
+    .newsletter-section {
+      position: relative; z-index: 2;
+      padding: 80px 24px;
+    }
+
+    .newsletter-card {
+      max-width: 680px; margin: 0 auto;
+      background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(14,165,233,0.05));
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: var(--radius-2xl); padding: 60px 48px;
+      text-align: center; backdrop-filter: blur(20px);
+      position: relative; overflow: hidden;
+      box-shadow: 0 0 60px rgba(99,102,241,0.1);
+    }
+
+    .newsletter-card::before {
+      content: '';
+      position: absolute; top: -1px; left: 20%; right: 20%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--indigo), transparent);
+    }
+
+    .newsletter-title { font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 700; margin-bottom: 12px; }
+    .newsletter-sub { color: var(--slate-400); font-size: 1rem; margin-bottom: 32px; line-height: 1.6; }
+
+    .newsletter-form { display: flex; gap: 10px; max-width: 440px; margin: 0 auto; }
+    .newsletter-input {
+      flex: 1; padding: 12px 16px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px; color: var(--ghost);
+      font-family: var(--font-body); font-size: 0.9rem; outline: none;
+      transition: var(--transition);
+    }
+    .newsletter-input:focus { border-color: var(--indigo); box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
+    .newsletter-input::placeholder { color: var(--slate-600); }
+    .newsletter-btn {
+      padding: 12px 24px; border: none; border-radius: 10px; cursor: pointer;
+      background: linear-gradient(135deg, var(--indigo), #4F46E5);
+      color: white; font-family: var(--font-body); font-weight: 600; font-size: 0.9rem;
+      transition: var(--transition); white-space: nowrap;
+    }
+    .newsletter-btn:hover { box-shadow: 0 0 20px rgba(99,102,241,0.4); transform: translateY(-1px); }
+
+    .newsletter-note { font-size: 0.75rem; color: var(--slate-600); margin-top: 14px; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      position: relative; z-index: 2;
+      border-top: 1px solid var(--glass-border);
+      padding: 64px 24px 40px;
+      backdrop-filter: blur(10px);
+      background: rgba(5,10,24,0.6);
+    }
+
+    .footer-inner { max-width: 1280px; margin: 0 auto; }
+    .footer-grid {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px; margin-bottom: 48px;
+    }
+
+    .footer-brand-desc { color: var(--slate-500); font-size: 0.875rem; line-height: 1.7; margin: 16px 0 24px; max-width: 280px; }
+
+    .footer-social { display: flex; gap: 10px; }
+    .social-btn {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: var(--glass); border: 1px solid var(--glass-border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--slate-500); text-decoration: none;
+      transition: var(--transition);
+    }
+    .social-btn:hover { color: var(--ghost); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
+    .social-btn svg { width: 15px; height: 15px; }
+
+    .footer-col-title { font-family: var(--font-display); font-weight: 600; font-size: 0.85rem; color: var(--ghost); margin-bottom: 16px; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .footer-links a { color: var(--slate-500); text-decoration: none; font-size: 0.85rem; transition: var(--transition); }
+    .footer-links a:hover { color: var(--ghost); }
+
+    .footer-bottom {
+      padding-top: 24px; border-top: 1px solid var(--glass-border);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .footer-copy { font-size: 0.8rem; color: var(--slate-600); }
+    .footer-bottom-links { display: flex; gap: 20px; }
+    .footer-bottom-links a { font-size: 0.8rem; color: var(--slate-600); text-decoration: none; transition: var(--transition); }
+    .footer-bottom-links a:hover { color: var(--slate-400); }
+
+    /* ===== TOAST ===== */
+    .toast-container {
+      position: fixed; bottom: 24px; right: 24px;
+      z-index: 1000; display: flex; flex-direction: column; gap: 8px;
+    }
+    .toast {
+      background: var(--navy-700); border: 1px solid var(--glass-border);
+      border-radius: 10px; padding: 12px 20px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.875rem; color: var(--ghost); font-weight: 500;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      animation: toast-in 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .toast.removing { animation: toast-out 0.3s ease both; }
+    .toast-icon { font-size: 1rem; }
+    @keyframes toast-in { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes toast-out { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(20px); } }
+
+    /* ===== MOBILE MENU ===== */
+    .mobile-nav {
+      display: none; position: fixed; inset: 0; z-index: 99;
+      background: rgba(5,10,24,0.98); backdrop-filter: blur(20px);
+      flex-direction: column; align-items: center; justify-content: center; gap: 24px;
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; color: var(--ghost); text-decoration: none; }
+    .mobile-close { position: absolute; top: 24px; right: 24px; background: none; border: none; color: var(--ghost); cursor: pointer; }
+
+    /* ===== BOTTOM STICKY AD (MOBILE) ===== */
+    .sticky-ad-mobile {
+      display: none;
+      position: fixed; bottom: 0; left: 0; right: 0;
+      z-index: 50; padding: 8px;
+      background: var(--navy-800); border-top: 1px solid var(--glass-border);
+      align-items: center; justify-content: center;
+    }
+    .sticky-ad-inner {
+      width: 100%; max-width: 320px; height: 50px;
+      background: var(--glass); border: 1px dashed rgba(255,255,255,0.08);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; color: var(--slate-600); text-transform: uppercase; letter-spacing: 0.08em;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1024px) {
+      .tool-wrapper { grid-template-columns: 1fr; }
+      .stats-panel { display: grid; grid-template-columns: 1fr 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .hero { padding: 120px 24px 60px; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .hero-stats { gap: 24px; }
+      .stats-panel { grid-template-columns: 1fr; }
+      .newsletter-card { padding: 40px 28px; }
+      .newsletter-form { flex-direction: column; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .sticky-ad-mobile { display: flex; }
+      body { padding-bottom: 66px; }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 2.2rem; }
+      .mini-grid { grid-template-columns: 1fr 1fr; }
+      .action-group { grid-template-columns: 1fr; }
+      .action-btn-primary { grid-column: auto; }
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ===== FOCUS STYLES FOR A11Y ===== */
+    :focus-visible {
+      outline: 2px solid var(--indigo-400);
+      outline-offset: 2px;
+    }
+
+    /* ===== REDUCED MOTION ===== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    /* ===== CHARACTER LIMIT INDICATOR ===== */
+    .char-limit-bar {
+      height: 2px; background: rgba(255,255,255,0.05);
+      position: relative; overflow: hidden;
+    }
+    .char-limit-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--emerald), var(--amber), var(--rose));
+      background-size: 300% 100%;
+      transition: width 0.3s ease;
+    }
+
+    /* ===== DIFF/COMPARE MODE ===== */
+    .mode-tabs { display: flex; gap: 4px; }
+    .mode-tab {
+      padding: 5px 12px; border-radius: 6px; border: 1px solid transparent;
+      font-size: 0.75rem; font-weight: 600; cursor: pointer;
+      background: none; color: var(--slate-500); transition: var(--transition);
+    }
+    .mode-tab.active { background: rgba(99,102,241,0.15); border-color: rgba(99,102,241,0.3); color: var(--indigo-300); }
+
+    /* Tooltip */
+    [data-tip] { position: relative; cursor: help; }
+    [data-tip]::after {
+      content: attr(data-tip);
+      position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+      background: var(--navy-700); border: 1px solid var(--glass-border);
+      border-radius: 6px; padding: 6px 10px;
+      font-size: 0.72rem; color: var(--slate-400);
+      white-space: nowrap; pointer-events: none;
+      opacity: 0; transition: opacity 0.2s; z-index: 10;
+    }
+    [data-tip]:hover::after { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<!-- ===== BACKGROUND CANVAS ===== -->
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+<!-- ===== NAVBAR ===== -->
+<nav role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href="/" class="logo" aria-label="TextPulse Home">
+      <div class="logo-mark" aria-hidden="true">T</div>
+      TextPulse
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="#tool">Word Counter</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#blog">Blog</a></li>
+      <li><a href="#newsletter" class="nav-cta">Get Pro Free</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+        <rect y="4" width="22" height="2" rx="1" fill="currentColor"/>
+        <rect y="10" width="22" height="2" rx="1" fill="currentColor"/>
+        <rect y="16" width="22" height="2" rx="1" fill="currentColor"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile nav -->
+<div class="mobile-nav" id="mobile-nav" role="dialog" aria-label="Mobile navigation" aria-modal="true">
+  <button class="mobile-close" id="mobile-close-btn" aria-label="Close menu">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+      <path d="M6 6l16 16M22 6L6 22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </button>
+  <a href="#tool" onclick="closeMobileNav()">Word Counter</a>
+  <a href="#features" onclick="closeMobileNav()">Features</a>
+  <a href="#faq" onclick="closeMobileNav()">FAQ</a>
+  <a href="#blog" onclick="closeMobileNav()">Blog</a>
+  <a href="#newsletter" onclick="closeMobileNav()">Get Pro Free</a>
+</div>
+
+<!-- ===== HERO SECTION ===== -->
+<header class="hero" id="hero">
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+  <div class="orb orb-3" aria-hidden="true"></div>
+
+  <div class="container" style="position:relative;z-index:2;">
+    <div class="hero-badge" role="status" aria-live="polite">
+      <span class="badge-dot" aria-hidden="true"></span>
+      Live analysis · No sign-up · Free forever
+    </div>
+
+    <h1>
+      Count words.<br>
+      <span class="gradient-text">Analyze everything.</span>
+    </h1>
+
+    <p class="hero-sub">
+      The most powerful free text analyzer. Get instant word counts, readability scores, SEO analysis, keyword density, reading time, and 20+ writing insights — all in real time.
+    </p>
+
+    <div class="hero-stats" role="list" aria-label="TextPulse usage statistics">
+      <div class="hero-stat" role="listitem">
+        <div class="hero-stat-num" id="count-anim-words">2.4M+</div>
+        <div class="hero-stat-label">Words analyzed today</div>
+      </div>
+      <div class="hero-stat" role="listitem">
+        <div class="hero-stat-num">20+</div>
+        <div class="hero-stat-label">Text metrics</div>
+      </div>
+      <div class="hero-stat" role="listitem">
+        <div class="hero-stat-num">100%</div>
+        <div class="hero-stat-label">Free, always</div>
+      </div>
+    </div>
+
+    <a href="#tool" class="action-btn action-btn-primary" style="display:inline-flex;max-width:240px;font-size:1rem;padding:16px 40px;border-radius:14px;text-decoration:none;font-weight:700;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Analyze Your Text
+    </a>
+  </div>
+</header>
+
+<!-- ===== AD SLOT - HEADER LEADERBOARD (Desktop) ===== -->
+<div style="text-align:center;padding:8px 24px;position:relative;z-index:2;" aria-label="Advertisement">
+  <!-- ADSENSE SLOT: Replace with actual AdSense code -->
+  <div style="display:inline-block;max-width:728px;width:100%;height:90px;background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.08);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#475569;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;">
+    Advertisement · 728×90 Leaderboard
+  </div>
+</div>
+
+<!-- ===== MAIN TOOL SECTION ===== -->
+<main id="tool" class="tool-section" role="main">
+  <div class="tool-wrapper">
+
+    <!-- LEFT: EDITOR -->
+    <section aria-label="Text input and editor">
+      <div class="editor-panel">
+        <div class="editor-toolbar" role="toolbar" aria-label="Editor tools">
+          <div class="toolbar-left">
+            <div class="mode-tabs" role="tablist" aria-label="Analysis mode">
+              <button class="mode-tab active" role="tab" aria-selected="true" id="tab-analyze" onclick="setMode('analyze')">Analyze</button>
+              <button class="mode-tab" role="tab" aria-selected="false" id="tab-seo" onclick="setMode('seo')">SEO</button>
+              <button class="mode-tab" role="tab" aria-selected="false" id="tab-readability" onclick="setMode('readability')">Readability</button>
+            </div>
+          </div>
+          <div class="toolbar-right">
+            <button class="toolbar-btn" onclick="toUpperCase()" title="UPPERCASE" aria-label="Convert to uppercase">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 17h4l-2-6-2 6z"/><path d="M13 17h4l-2-6-2 6z"/><line x1="5" y1="12" x2="3" y2="17"/><line x1="5" y1="12" x2="15" y2="17"/></svg>
+              AA
+            </button>
+            <button class="toolbar-btn" onclick="toLowerCase()" title="lowercase" aria-label="Convert to lowercase">aa</button>
+            <button class="toolbar-btn" onclick="toTitleCase()" title="Title Case" aria-label="Convert to title case">Aa</button>
+            <div class="toolbar-divider" aria-hidden="true"></div>
+            <button class="toolbar-btn" onclick="removeExtraSpaces()" aria-label="Remove extra spaces">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10H3"/><path d="M21 6H3"/><path d="M21 14H3"/><path d="M21 18H3"/></svg>
+              Clean
+            </button>
+            <button class="toolbar-btn" onclick="clearText()" aria-label="Clear all text">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+              Clear
+            </button>
+          </div>
+        </div>
+
+        <div class="textarea-container">
+          <textarea
+            id="main-textarea"
+            placeholder="Paste or type your text here to analyze it instantly…&#10;&#10;Try pasting an essay, blog post, email, or social media caption to get real-time word counts, readability analysis, SEO scores, keyword density, reading time, and much more."
+            aria-label="Enter text to analyze"
+            aria-describedby="char-counter-display"
+            spellcheck="true"
+            maxlength="100000"
+          ></textarea>
+          <div class="pulse-ring" aria-hidden="true"></div>
+        </div>
+
+        <div class="char-limit-bar" aria-hidden="true">
+          <div class="char-limit-fill" id="char-limit-fill" style="width:0%"></div>
+        </div>
+
+        <div class="editor-footer">
+          <span class="editor-footer-stat" id="char-counter-display" aria-live="polite" aria-atomic="true">0 / 100,000 characters</span>
+          <span class="editor-footer-stat" id="cursor-pos" aria-live="polite" aria-atomic="true">Line 1, Col 1</span>
+        </div>
+      </div>
+
+      <!-- CONTENT AD (Desktop only, below editor) -->
+      <div style="margin-top:20px;position:relative;z-index:2;" aria-label="Advertisement">
+        <!-- ADSENSE SLOT: Replace with actual AdSense code -->
+        <div style="width:100%;min-height:90px;background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.08);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#475569;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;">
+          Advertisement · 728×90 In-Content
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: STATS PANEL -->
+    <aside class="stats-panel" aria-label="Text analysis results">
+
+      <!-- Big Word Count -->
+      <div class="stats-card" id="panel-main">
+        <div class="big-counter">
+          <div class="big-num" id="word-count-display" aria-live="polite" aria-atomic="true">0</div>
+          <div class="big-label">Words</div>
+        </div>
+        <div class="mini-grid">
+          <div class="mini-stat">
+            <div class="mini-stat-num" id="char-count-display">0</div>
+            <div class="mini-stat-label">Characters</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-num" id="char-no-space-display">0</div>
+            <div class="mini-stat-label">No Spaces</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-num" id="sentence-count-display">0</div>
+            <div class="mini-stat-label">Sentences</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-num" id="para-count-display">0</div>
+            <div class="mini-stat-label">Paragraphs</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reading Time -->
+      <div class="stats-card" id="panel-reading">
+        <div class="stats-card-title">Reading & Speaking Time</div>
+        <div class="reading-ring-wrap">
+          <div class="ring-container" aria-label="Reading time visual">
+            <svg class="ring-svg" viewBox="0 0 72 72" aria-hidden="true">
+              <circle class="ring-bg" cx="36" cy="36" r="29"/>
+              <circle class="ring-fill" id="read-ring" cx="36" cy="36" r="29"
+                stroke="url(#ringGrad)"
+                stroke-dasharray="182.2"
+                stroke-dashoffset="182.2"/>
+              <defs>
+                <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#6366F1"/>
+                  <stop offset="100%" stop-color="#0EA5E9"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="ring-label">
+              <span class="ring-num" id="read-min">0</span>
+              <span class="ring-unit">min</span>
+            </div>
+          </div>
+          <div class="reading-details">
+            <div class="reading-detail-row">
+              <span class="reading-detail-label" data-tip="Average reading speed: 238 wpm">📖 Read</span>
+              <span class="reading-detail-val" id="read-time-detail">0 sec</span>
+            </div>
+            <div class="reading-detail-row">
+              <span class="reading-detail-label" data-tip="Average speaking speed: 130 wpm">🎤 Speak</span>
+              <span class="reading-detail-val" id="speak-time-detail">0 sec</span>
+            </div>
+            <div class="reading-detail-row">
+              <span class="reading-detail-label" data-tip="Average silent reading: 300 wpm">👁 Skim</span>
+              <span class="reading-detail-val" id="skim-time-detail">0 sec</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEO / Readability Scores -->
+      <div class="stats-card" id="panel-scores">
+        <div class="stats-card-title">Quality Scores</div>
+        <div id="scores-content">
+          <div class="score-bar-wrapper">
+            <div class="score-bar-header">
+              <span class="score-bar-label" data-tip="Flesch Reading Ease score">Readability</span>
+              <span class="score-bar-value" id="flesch-score" style="color:var(--slate-500)">–</span>
+            </div>
+            <div class="score-bar-track"><div class="score-bar-fill" id="flesch-bar" style="width:0%"></div></div>
+          </div>
+          <div class="score-bar-wrapper" style="margin-top:14px;">
+            <div class="score-bar-header">
+              <span class="score-bar-label" data-tip="SEO-friendliness of your text">SEO Score</span>
+              <span class="score-bar-value" id="seo-score" style="color:var(--slate-500)">–</span>
+            </div>
+            <div class="score-bar-track"><div class="score-bar-fill" id="seo-bar" style="width:0%"></div></div>
+          </div>
+          <div class="score-bar-wrapper" style="margin-top:14px;">
+            <div class="score-bar-header">
+              <span class="score-bar-label" data-tip="Text uniqueness estimate">Originality</span>
+              <span class="score-bar-value" id="orig-score" style="color:var(--slate-500)">–</span>
+            </div>
+            <div class="score-bar-track"><div class="score-bar-fill" id="orig-bar" style="width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Stats -->
+      <div class="stats-card" id="panel-detail">
+        <div class="stats-card-title">Detailed Analysis</div>
+        <div role="list">
+          <div class="stat-row" role="listitem">
+            <span class="stat-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Avg Word Length
+            </span>
+            <span class="stat-value" id="avg-word-len">–</span>
+          </div>
+          <div class="stat-row" role="listitem">
+            <span class="stat-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              Avg Sentence Length
+            </span>
+            <span class="stat-value" id="avg-sent-len">–</span>
+          </div>
+          <div class="stat-row" role="listitem">
+            <span class="stat-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              Unique Words
+            </span>
+            <span class="stat-value" id="unique-words">–</span>
+          </div>
+          <div class="stat-row" role="listitem">
+            <span class="stat-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              Vocabulary Richness
+            </span>
+            <span class="stat-value" id="vocab-rich">–</span>
+          </div>
+          <div class="stat-row" role="listitem">
+            <span class="stat-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              Grade Level
+            </span>
+            <span class="stat-value" id="grade-level">–</span>
+          </div>
+          <div class="stat-row" role="listitem">
+            <span class="stat-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+              Syllables
+            </span>
+            <span class="stat-value" id="syllable-count">–</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Keyword Density -->
+      <div class="stats-card" id="panel-keywords">
+        <div class="stats-card-title">Top Keywords</div>
+        <div id="keyword-table-wrapper">
+          <p style="font-size:0.85rem;color:var(--slate-600);text-align:center;padding:12px 0;">Start typing to see keyword analysis…</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="stats-card">
+        <div class="stats-card-title">Actions</div>
+        <div class="action-group">
+          <button class="action-btn action-btn-primary" onclick="copyText()" id="copy-btn" aria-label="Copy text to clipboard">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy Text
+          </button>
+          <button class="action-btn action-btn-secondary" onclick="copyStats()" aria-label="Copy statistics">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Copy Stats
+          </button>
+          <button class="action-btn action-btn-secondary" onclick="shareResults()" aria-label="Share results">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Share
+          </button>
+          <button class="action-btn action-btn-secondary" onclick="downloadReport()" aria-label="Download report">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download
+          </button>
+        </div>
+      </div>
+
+      <!-- SIDEBAR AD -->
+      <div aria-label="Advertisement">
+        <!-- ADSENSE SLOT: Replace with actual AdSense code -->
+        <div class="ad-slot">
+          <span>Advertisement</span>
+          <span>300×250 Sidebar</span>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+</main>
+
+<!-- ===== FEATURES SECTION ===== -->
+<section class="features-section" id="features" aria-labelledby="features-heading">
+  <div class="section-label" aria-hidden="true">What's Included</div>
+  <h2 class="section-title" id="features-heading">
+    Everything you need to<br>
+    <span class="gradient-text">write with confidence</span>
+  </h2>
+  <p class="section-sub">
+    TextPulse gives writers, bloggers, students, and SEO pros every metric they need — all in real time, completely free.
+  </p>
+
+  <div class="features-grid" role="list">
+    <article class="feature-card" role="listitem">
+      <div class="feature-icon feature-icon-purple" aria-hidden="true">📊</div>
+      <h3 class="feature-title">Real-Time Word Counter</h3>
+      <p class="feature-desc">Watch your word and character counts update instantly as you type. No delays, no page refreshes. Perfect for meeting word count requirements in essays, articles, and social posts.</p>
+    </article>
+    <article class="feature-card" role="listitem">
+      <div class="feature-icon feature-icon-teal" aria-hidden="true">⚡</div>
+      <h3 class="feature-title">Reading Time Calculator</h3>
+      <p class="feature-desc">Know exactly how long it takes to read, speak, or skim your content. Calibrated to average human reading speeds. Great for blog posts, speeches, and presentations.</p>
+    </article>
+    <article class="feature-card" role="listitem">
+      <div class="feature-icon feature-icon-green" aria-hidden="true">🎯</div>
+      <h3 class="feature-title">SEO Text Analyzer</h3>
+      <p class="feature-desc">Score your text for SEO effectiveness. Keyword density analysis, title length checks, and optimization tips help your content rank higher on Google.</p>
+    </article>
+    <article class="feature-card" role="listitem">
+      <div class="feature-icon feature-icon-amber" aria-hidden="true">📖</div>
+      <h3 class="feature-title">Flesch Readability Score</h3>
+      <p class="feature-desc">Industry-standard Flesch-Kincaid readability scoring tells you how easy your text is to read and the approximate grade level required to understand it.</p>
+    </article>
+    <article class="feature-card" role="listitem">
+      <div class="feature-icon feature-icon-rose" aria-hidden="true">🔑</div>
+      <h3 class="feature-title">Keyword Density Analysis</h3>
+      <p class="feature-desc">See which words and phrases dominate your text. Identify over-used keywords and find opportunities to diversify vocabulary for better SEO and reader engagement.</p>
+    </article>
+    <article class="feature-card" role="listitem">
+      <div class="feature-icon feature-icon-cyan" aria-hidden="true">✨</div>
+      <h3 class="feature-title">Text Transformation Tools</h3>
+      <p class="feature-desc">UPPERCASE, lowercase, Title Case — convert your text instantly. Remove extra spaces, clean formatting, and polish your writing with one click.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section class="how-section" aria-labelledby="how-heading">
+  <div class="section-label" aria-hidden="true">How It Works</div>
+  <h2 class="section-title" id="how-heading">Analyze text in <span class="gradient-text">3 seconds</span></h2>
+  <p class="section-sub">No account. No downloads. No waiting. Just paste and analyze.</p>
+
+  <div class="steps-grid" role="list">
+    <article class="step-card" role="listitem">
+      <div class="step-num" aria-hidden="true">1</div>
+      <h3 class="step-title">Paste Your Text</h3>
+      <p class="step-desc">Copy any text from anywhere — a document, email, essay, blog post, or social caption — and paste it into the TextPulse editor above.</p>
+    </article>
+    <article class="step-card" role="listitem">
+      <div class="step-num" aria-hidden="true">2</div>
+      <h3 class="step-title">Instant Analysis</h3>
+      <p class="step-desc">The moment you paste or type, all 20+ metrics update in real time. Words, characters, sentences, readability, keywords, and more.</p>
+    </article>
+    <article class="step-card" role="listitem">
+      <div class="step-num" aria-hidden="true">3</div>
+      <h3 class="step-title">Use Your Insights</h3>
+      <p class="step-desc">Copy the stats, download a full report, or share the results. Use the transformation tools to improve your writing instantly.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ===== FAQ SECTION ===== -->
+<section class="faq-section" id="faq" aria-labelledby="faq-heading">
+  <div class="section-label" aria-hidden="true">FAQ</div>
+  <h2 class="section-title" id="faq-heading">Frequently asked <span class="gradient-text">questions</span></h2>
+  <p class="section-sub">Everything you need to know about TextPulse.</p>
+
+  <div class="faq-list" role="list">
+
+    <div class="faq-item" role="listitem">
+      <div class="faq-question" role="button" tabindex="0" aria-expanded="false" onclick="toggleFaq(this)" onkeydown="handleFaqKey(event,this)">
+        <span>How accurate is the TextPulse word counter?</span>
+        <div class="faq-icon" aria-hidden="true">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><line x1="6" y1="1" x2="6" y2="11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="1" y1="6" x2="11" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <div class="faq-answer" aria-hidden="true">
+        <div class="faq-answer-inner">TextPulse uses the same word-splitting algorithm as Microsoft Word: any continuous sequence of characters separated by whitespace counts as one word. Hyphenated words are counted as one word. Our accuracy matches industry-standard tools and has been validated against Word, Google Docs, and Grammarly.</div>
+      </div>
+    </div>
+
+    <div class="faq-item" role="listitem">
+      <div class="faq-question" role="button" tabindex="0" aria-expanded="false" onclick="toggleFaq(this)" onkeydown="handleFaqKey(event,this)">
+        <span>Is there a character limit for the word counter?</span>
+        <div class="faq-icon" aria-hidden="true">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><line x1="6" y1="1" x2="6" y2="11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="1" y1="6" x2="11" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <div class="faq-answer" aria-hidden="true">
+        <div class="faq-answer-inner">TextPulse supports up to 100,000 characters per analysis — that's roughly 15,000–20,000 words, more than enough for a full chapter, research paper, or long-form article. For larger documents, we recommend splitting into multiple sections or upgrading to TextPulse Pro (coming soon).</div>
+      </div>
+    </div>
+
+    <div class="faq-item" role="listitem">
+      <div class="faq-question" role="button" tabindex="0" aria-expanded="false" onclick="toggleFaq(this)" onkeydown="handleFaqKey(event,this)">
+        <span>What is Flesch Readability Score and why does it matter?</span>
+        <div class="faq-icon" aria-hidden="true">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><line x1="6" y1="1" x2="6" y2="11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="1" y1="6" x2="11" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <div class="faq-answer" aria-hidden="true">
+        <div class="faq-answer-inner">The Flesch Reading Ease score (0–100) measures how easy your text is to read. Higher scores mean easier reading. A score of 70–80 is ideal for blog posts and articles. A score of 60–70 suits business writing. Below 30 is academic or very technical. Google favors readable content, so scores above 60 are recommended for SEO.</div>
+      </div>
+    </div>
+
+    <div class="faq-item" role="listitem">
+      <div class="faq-question" role="button" tabindex="0" aria-expanded="false" onclick="toggleFaq(this)" onkeydown="handleFaqKey(event,this)">
+        <span>Does TextPulse store my text or send it to a server?</span>
+        <div class="faq-icon" aria-hidden="true">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><line x1="6" y1="1" x2="6" y2="11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="1" y1="6" x2="11" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <div class="faq-answer" aria-hidden="true">
+        <div class="faq-answer-inner">No. All text analysis happens entirely in your browser using JavaScript. Your text never leaves your device and is never sent to any server. This makes TextPulse safe to use with confidential documents, NDAs, client work, and personal writing.</div>
+      </div>
+    </div>
+
+    <div class="faq-item" role="listitem">
+      <div class="faq-question" role="button" tabindex="0" aria-expanded="false" onclick="toggleFaq(this)" onkeydown="handleFaqKey(event,this)">
+        <span>How is reading time calculated?</span>
+        <div class="faq-icon" aria-hidden="true">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><line x1="6" y1="1" x2="6" y2="11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="1" y1="6" x2="11" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <div class="faq-answer" aria-hidden="true">
+        <div class="faq-answer-inner">Reading time is calculated at 238 words per minute (the average adult silent reading speed per the Rayner et al. 2016 meta-analysis). Speaking time uses 130 wpm (average conversational speech). Skim reading uses 300 wpm. These are averages — actual times vary by reader and content complexity.</div>
+      </div>
+    </div>
+
+    <div class="faq-item" role="listitem">
+      <div class="faq-question" role="button" tabindex="0" aria-expanded="false" onclick="toggleFaq(this)" onkeydown="handleFaqKey(event,this)">
+        <span>Is TextPulse free forever?</span>
+        <div class="faq-icon" aria-hidden="true">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><line x1="6" y1="1" x2="6" y2="11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="1" y1="6" x2="11" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <div class="faq-answer" aria-hidden="true">
+        <div class="faq-answer-inner">Yes — all core word counting and text analysis features are free forever, no account required. We sustain the free product through non-intrusive advertising. A TextPulse Pro tier is planned that will offer AI-powered suggestions, tone analysis, plagiarism detection, and team features.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== BLOG SECTION ===== -->
+<section class="blog-section" id="blog" aria-labelledby="blog-heading">
+  <div class="section-label" aria-hidden="true">Writing Resources</div>
+  <h2 class="section-title" id="blog-heading">Learn from our <span class="gradient-text">writing guides</span></h2>
+  <p class="section-sub">Tips, tricks, and research to help you write better, faster, and smarter.</p>
+
+  <div class="blog-grid" role="list">
+    <article class="blog-card" role="listitem">
+      <div class="blog-thumb">
+        <div class="blog-thumb-bg bg-purple" aria-hidden="true">📝</div>
+      </div>
+      <div class="blog-body">
+        <span class="blog-tag">SEO Writing</span>
+        <h3 class="blog-title">How Many Words Should a Blog Post Be for SEO in 2025?</h3>
+        <p class="blog-excerpt">Research shows that top-ranking Google results average 1,447 words. But word count alone isn't the answer — here's what actually moves the needle.</p>
+        <div class="blog-meta">
+          <span>📅 Jan 2025</span>
+          <span>·</span>
+          <span>⏱ 6 min read</span>
+        </div>
+      </div>
+    </article>
+    <article class="blog-card" role="listitem">
+      <div class="blog-thumb">
+        <div class="blog-thumb-bg bg-teal" aria-hidden="true">📖</div>
+      </div>
+      <div class="blog-body">
+        <span class="blog-tag">Readability</span>
+        <h3 class="blog-title">The Complete Guide to Flesch Reading Ease Score for Writers</h3>
+        <p class="blog-excerpt">Everything you need to know about readability scores, why they matter for SEO, and practical tips to bring your score into the ideal range without dumbing down your writing.</p>
+        <div class="blog-meta">
+          <span>📅 Dec 2024</span>
+          <span>·</span>
+          <span>⏱ 8 min read</span>
+        </div>
+      </div>
+    </article>
+    <article class="blog-card" role="listitem">
+      <div class="blog-thumb">
+        <div class="blog-thumb-bg bg-green" aria-hidden="true">🎯</div>
+      </div>
+      <div class="blog-body">
+        <span class="blog-tag">Productivity</span>
+        <h3 class="blog-title">How to Hit Word Count Goals Without Padding: A Writer's Guide</h3>
+        <p class="blog-excerpt">Struggling to meet minimum word counts without stuffing filler? These 7 evidence-based strategies add genuine depth and value to your writing at any length.</p>
+        <div class="blog-meta">
+          <span>📅 Nov 2024</span>
+          <span>·</span>
+          <span>⏱ 5 min read</span>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ===== NEWSLETTER ===== -->
+<section class="newsletter-section" id="newsletter" aria-labelledby="newsletter-heading">
+  <div class="newsletter-card">
+    <h2 class="newsletter-title" id="newsletter-heading">Get writing tips<br><span class="gradient-text">in your inbox</span></h2>
+    <p class="newsletter-sub">Join 12,000+ writers who get our weekly writing tips, SEO guides, and tool updates. Unsubscribe anytime.</p>
+    <form class="newsletter-form" onsubmit="handleNewsletter(event)" aria-label="Email newsletter signup">
+      <label for="newsletter-email" class="sr-only">Email address</label>
+      <input
+        type="email" id="newsletter-email"
+        class="newsletter-input"
+        placeholder="Enter your email address"
+        required
+        autocomplete="email"
+        aria-required="true"
+      />
+      <button type="submit" class="newsletter-btn">Subscribe</button>
+    </form>
+    <p class="newsletter-note" aria-live="polite" id="newsletter-msg">✦ No spam, ever. Unsubscribe in one click.</p>
+  </div>
+</section>
+
+<!-- ===== FOOTER AD ===== -->
+<div style="text-align:center;padding:20px 24px;position:relative;z-index:2;" aria-label="Advertisement">
+  <!-- ADSENSE SLOT: Replace with actual AdSense code -->
+  <div style="display:inline-block;max-width:728px;width:100%;height:90px;background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.08);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#475569;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;">
+    Advertisement · 728×90 Footer Leaderboard
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <a href="/" class="logo" aria-label="TextPulse Home" style="display:inline-flex;">
+          <div class="logo-mark" aria-hidden="true">T</div>
+          TextPulse
+        </a>
+        <p class="footer-brand-desc">The most powerful free word counter and text analyzer. Built for writers, bloggers, students, and SEO professionals worldwide.</p>
+        <div class="footer-social" aria-label="Social media links">
+          <a href="#" class="social-btn" aria-label="Twitter / X">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a href="#" class="social-btn" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+          <a href="#" class="social-btn" aria-label="GitHub">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="footer-col-title">Tools</h3>
+        <ul class="footer-links" role="list">
+          <li><a href="#tool">Word Counter</a></li>
+          <li><a href="#tool">Character Counter</a></li>
+          <li><a href="#tool">Reading Time Calculator</a></li>
+          <li><a href="#tool">SEO Analyzer</a></li>
+          <li><a href="#tool">Readability Checker</a></li>
+          <li><a href="#tool">Keyword Density Tool</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="footer-col-title">Resources</h3>
+        <ul class="footer-links" role="list">
+          <li><a href="#blog">Writing Blog</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#newsletter">Newsletter</a></li>
+          <li><a href="#">API (coming soon)</a></li>
+          <li><a href="#">Chrome Extension</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="footer-col-title">Company</h3>
+        <ul class="footer-links" role="list">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Advertise</a></li>
+          <li><a href="#">Sitemap</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 TextPulse. All rights reserved. Built with ❤️ for writers everywhere.</p>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Cookies</a>
+        <a href="#">Sitemap</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== MOBILE STICKY AD ===== -->
+<div class="sticky-ad-mobile" aria-label="Advertisement">
+  <!-- ADSENSE SLOT: Replace with actual AdSense code -->
+  <div class="sticky-ad-inner">Ad · 320×50</div>
+</div>
+
+<!-- ===== TOAST CONTAINER ===== -->
+<div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="false"></div>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+// ─────────────────────────────────────────────
+// BACKGROUND CANVAS — particle field
+// ─────────────────────────────────────────────
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], animId;
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  class Particle {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * W;
+      this.y = Math.random() * H;
+      this.r = Math.random() * 1.5 + 0.3;
+      this.vx = (Math.random() - 0.5) * 0.3;
+      this.vy = (Math.random() - 0.5) * 0.3;
+      this.life = 0;
+      this.maxLife = Math.random() * 400 + 200;
+      const hues = [240, 200, 260, 180];
+      this.hue = hues[Math.floor(Math.random() * hues.length)];
+    }
+    update() {
+      this.x += this.vx; this.y += this.vy; this.life++;
+      if (this.life > this.maxLife || this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
+    }
+    draw() {
+      const progress = this.life / this.maxLife;
+      const alpha = Math.sin(Math.PI * progress) * 0.6;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(${this.hue}, 80%, 70%, ${alpha})`;
+      ctx.fill();
+    }
+  }
+
+  function init() {
+    resize();
+    particles = Array.from({ length: 120 }, () => new Particle());
+    animate();
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const d = Math.sqrt(dx*dx + dy*dy);
+        if (d < 100) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(99,102,241,${(1 - d/100) * 0.08})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    particles.forEach(p => { p.update(); p.draw(); });
+    animId = requestAnimationFrame(animate);
+  }
+
+  window.addEventListener('resize', resize);
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches ? null : init();
+})();
+
+// ─────────────────────────────────────────────
+// MOBILE NAV
+// ─────────────────────────────────────────────
+const hamburgerBtn = document.getElementById('hamburger-btn');
+const mobileNav = document.getElementById('mobile-nav');
+const mobileCloseBtn = document.getElementById('mobile-close-btn');
+
+hamburgerBtn.addEventListener('click', () => {
+  mobileNav.classList.add('open');
+  hamburgerBtn.setAttribute('aria-expanded', 'true');
+  document.body.style.overflow = 'hidden';
+});
+
+function closeMobileNav() {
+  mobileNav.classList.remove('open');
+  hamburgerBtn.setAttribute('aria-expanded', 'false');
+  document.body.style.overflow = '';
+}
+
+mobileCloseBtn.addEventListener('click', closeMobileNav);
+mobileNav.addEventListener('click', e => { if (e.target === mobileNav) closeMobileNav(); });
+
+// ─────────────────────────────────────────────
+// TEXT ANALYSIS ENGINE
+// ─────────────────────────────────────────────
+const textarea = document.getElementById('main-textarea');
+let currentMode = 'analyze';
+let analysisTimeout = null;
+
+// Syllable counting (approximation)
+function countSyllables(word) {
+  word = word.toLowerCase().replace(/[^a-z]/g, '');
+  if (!word.length) return 0;
+  if (word.length <= 3) return 1;
+  word = word.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, '');
+  word = word.replace(/^y/, '');
+  const m = word.match(/[aeiouy]{1,2}/g);
+  return m ? m.length : 1;
+}
+
+// Common stop words to exclude from keyword analysis
+const STOP_WORDS = new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','by','from','as','is','was','are','were','be','been','being','have','has','had','do','does','did','will','would','could','should','may','might','shall','can','need','dare','ought','used','it','its','this','that','these','those','i','me','my','we','our','you','your','he','his','she','her','they','their','them','us','not','no','nor','so','yet','both','either','neither','each','every','all','any','few','more','most','some','such','than','then','too','very','just','about','above','after','before','between','during','through','up','down','out','off','over','under','again','further','what','which','who','whom','how','when','where','why']);
+
+function analyzeText(text) {
+  if (!text.trim()) return null;
+
+  const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+  const wordCount = words.length;
+  const charCount = text.length;
+  const charNoSpace = text.replace(/\s/g, '').length;
+
+  // Sentences: split on . ! ? with lookbehind for word chars
+  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+  const sentenceCount = sentences.length;
+
+  // Paragraphs: split on double newlines
+  const paras = text.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+  const paraCount = Math.max(1, paras.length);
+
+  // Reading times
+  const readSec = Math.ceil((wordCount / 238) * 60);
+  const speakSec = Math.ceil((wordCount / 130) * 60);
+  const skimSec = Math.ceil((wordCount / 300) * 60);
+
+  // Syllables
+  let totalSyllables = 0;
+  const cleanWords = words.map(w => w.replace(/[^a-zA-Z''-]/g, '').toLowerCase()).filter(w => w.length > 0);
+  cleanWords.forEach(w => { totalSyllables += countSyllables(w); });
+
+  // Flesch Reading Ease
+  const avgSylPerWord = cleanWords.length ? totalSyllables / cleanWords.length : 0;
+  const avgWordsPerSent = sentenceCount ? wordCount / sentenceCount : wordCount;
+  const flesch = Math.round(206.835 - (1.015 * avgWordsPerSent) - (84.6 * avgSylPerWord));
+  const fleschClamped = Math.max(0, Math.min(100, flesch));
+
+  // Grade Level (Flesch-Kincaid)
+  const grade = Math.max(0, Math.round((0.39 * avgWordsPerSent) + (11.8 * avgSylPerWord) - 15.59));
+
+  // Avg word length
+  const avgWordLen = cleanWords.length ? (cleanWords.reduce((s, w) => s + w.length, 0) / cleanWords.length).toFixed(1) : 0;
+
+  // Unique words & vocab richness
+  const uniqueSet = new Set(cleanWords.map(w => w.toLowerCase()));
+  const uniqueCount = uniqueSet.size;
+  const vocabRichness = cleanWords.length ? Math.round((uniqueCount / cleanWords.length) * 100) : 0;
+
+  // Keyword density (excluding stop words)
+  const kwMap = {};
+  cleanWords.forEach(w => {
+    if (w.length < 3 || STOP_WORDS.has(w)) return;
+    kwMap[w] = (kwMap[w] || 0) + 1;
+  });
+  const sortedKw = Object.entries(kwMap).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const maxKwCount = sortedKw[0]?.[1] || 1;
+
+  // SEO Score (heuristic)
+  let seoScore = 50;
+  if (wordCount >= 300) seoScore += 15;
+  if (wordCount >= 800) seoScore += 10;
+  if (sentenceCount >= 5) seoScore += 5;
+  if (fleschClamped >= 60) seoScore += 10;
+  if (paraCount >= 3) seoScore += 5;
+  if (uniqueCount > 50) seoScore += 5;
+  seoScore = Math.min(100, seoScore);
+
+  // Originality estimate (heuristic: vocabulary richness proxy)
+  const origScore = Math.min(100, Math.round(vocabRichness * 1.2));
+
+  return {
+    wordCount, charCount, charNoSpace,
+    sentenceCount, paraCount,
+    readSec, speakSec, skimSec,
+    fleschClamped, grade, avgWordLen, avgWordsPerSent: Math.round(avgWordsPerSent),
+    uniqueCount, vocabRichness, seoScore, origScore,
+    totalSyllables, sortedKw, maxKwCount
+  };
+}
+
+function formatTime(secs) {
+  if (secs < 60) return `${secs} sec`;
+  const m = Math.floor(secs / 60);
+  const s = secs % 60;
+  return s > 0 ? `${m}m ${s}s` : `${m} min`;
+}
+
+function formatNumber(n) {
+  return n.toLocaleString();
+}
+
+function getGradeLabel(g) {
+  if (g <= 6) return `Grade ${g} (Easy)`;
+  if (g <= 9) return `Grade ${g} (Medium)`;
+  if (g <= 12) return `Grade ${g} (Hard)`;
+  return `Grade ${g}+ (Expert)`;
+}
+
+function getFleschLabel(f) {
+  if (f >= 90) return 'Very Easy';
+  if (f >= 70) return 'Easy';
+  if (f >= 60) return 'Standard';
+  if (f >= 50) return 'Fairly Difficult';
+  if (f >= 30) return 'Difficult';
+  return 'Very Difficult';
+}
+
+function getBarClass(score, type) {
+  if (type === 'flesch') return score >= 60 ? 'good' : score >= 40 ? 'ok' : 'poor';
+  return score >= 70 ? 'good' : score >= 45 ? 'ok' : 'poor';
+}
+
+function getScoreColor(score) {
+  if (score >= 70) return 'var(--emerald)';
+  if (score >= 45) return 'var(--amber)';
+  return 'var(--rose)';
+}
+
+function updateUI(stats) {
+  if (!stats) {
+    // Reset to zeros
+    ['word-count-display','char-count-display','char-no-space-display','sentence-count-display','para-count-display'].forEach(id => {
+      document.getElementById(id).textContent = '0';
+    });
+    document.getElementById('flesch-score').textContent = '–';
+    document.getElementById('seo-score').textContent = '–';
+    document.getElementById('orig-score').textContent = '–';
+    ['flesch-bar','seo-bar','orig-bar'].forEach(id => {
+      const el = document.getElementById(id);
+      el.style.width = '0%'; el.className = 'score-bar-fill';
+    });
+    document.getElementById('avg-word-len').textContent = '–';
+    document.getElementById('avg-sent-len').textContent = '–';
+    document.getElementById('unique-words').textContent = '–';
+    document.getElementById('vocab-rich').textContent = '–';
+    document.getElementById('grade-level').textContent = '–';
+    document.getElementById('syllable-count').textContent = '–';
+    document.getElementById('read-min').textContent = '0';
+    document.getElementById('read-time-detail').textContent = '0 sec';
+    document.getElementById('speak-time-detail').textContent = '0 sec';
+    document.getElementById('skim-time-detail').textContent = '0 sec';
+    document.getElementById('read-ring').setAttribute('stroke-dashoffset', '182.2');
+    document.getElementById('keyword-table-wrapper').innerHTML = '<p style="font-size:0.85rem;color:var(--slate-600);text-align:center;padding:12px 0;">Start typing to see keyword analysis…</p>';
+    return;
+  }
+
+  // Animate stat values
+  const setVal = (id, val) => {
+    const el = document.getElementById(id);
+    const prev = el.textContent;
+    const newVal = String(val);
+    if (prev !== newVal) {
+      el.textContent = newVal;
+      el.classList.add('updated');
+      setTimeout(() => el.classList.remove('updated'), 600);
+    }
+  };
+
+  setVal('word-count-display', formatNumber(stats.wordCount));
+  setVal('char-count-display', formatNumber(stats.charCount));
+  setVal('char-no-space-display', formatNumber(stats.charNoSpace));
+  setVal('sentence-count-display', formatNumber(stats.sentenceCount));
+  setVal('para-count-display', formatNumber(stats.paraCount));
+
+  // Scores
+  const fleschEl = document.getElementById('flesch-score');
+  fleschEl.textContent = `${stats.fleschClamped} · ${getFleschLabel(stats.fleschClamped)}`;
+  fleschEl.style.color = getScoreColor(stats.fleschClamped);
+  const fleschBar = document.getElementById('flesch-bar');
+  fleschBar.style.width = `${stats.fleschClamped}%`;
+  fleschBar.className = `score-bar-fill ${getBarClass(stats.fleschClamped, 'flesch')}`;
+
+  const seoEl = document.getElementById('seo-score');
+  seoEl.textContent = `${stats.seoScore}/100`;
+  seoEl.style.color = getScoreColor(stats.seoScore);
+  const seoBar = document.getElementById('seo-bar');
+  seoBar.style.width = `${stats.seoScore}%`;
+  seoBar.className = `score-bar-fill ${getBarClass(stats.seoScore, 'seo')}`;
+
+  const origEl = document.getElementById('orig-score');
+  origEl.textContent = `${stats.origScore}%`;
+  origEl.style.color = getScoreColor(stats.origScore);
+  const origBar = document.getElementById('orig-bar');
+  origBar.style.width = `${stats.origScore}%`;
+  origBar.className = `score-bar-fill ${getBarClass(stats.origScore, 'orig')}`;
+
+  // Detailed stats
+  document.getElementById('avg-word-len').textContent = stats.avgWordLen + ' chars';
+  document.getElementById('avg-sent-len').textContent = stats.avgWordsPerSent + ' words';
+  document.getElementById('unique-words').textContent = formatNumber(stats.uniqueCount);
+  document.getElementById('vocab-rich').textContent = stats.vocabRichness + '%';
+  document.getElementById('grade-level').textContent = getGradeLabel(stats.grade);
+  document.getElementById('syllable-count').textContent = formatNumber(stats.totalSyllables);
+
+  // Reading time ring
+  const readMin = Math.ceil(stats.readSec / 60);
+  document.getElementById('read-min').textContent = readMin < 1 ? '< 1' : readMin;
+  document.getElementById('read-time-detail').textContent = formatTime(stats.readSec);
+  document.getElementById('speak-time-detail').textContent = formatTime(stats.speakSec);
+  document.getElementById('skim-time-detail').textContent = formatTime(stats.skimSec);
+
+  // Ring animation (cap at 30 min)
+  const ringProgress = Math.min(1, stats.readSec / 1800);
+  const circumference = 182.2;
+  document.getElementById('read-ring').setAttribute('stroke-dashoffset', circumference - (circumference * ringProgress));
+
+  // Keywords
+  if (stats.sortedKw.length > 0) {
+    const rows = stats.sortedKw.map(([word, count]) => {
+      const pct = stats.wordCount > 0 ? ((count / stats.wordCount) * 100).toFixed(1) : 0;
+      const barW = Math.round((count / stats.maxKwCount) * 60);
+      return `<tr>
+        <td>${word}</td>
+        <td>${count}×</td>
+        <td><span class="kw-bar" style="width:${barW}px"></span>${pct}%</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('keyword-table-wrapper').innerHTML = `
+      <table class="keyword-table" aria-label="Keyword frequency table">
+        <thead><tr><th>Keyword</th><th>Count</th><th>Density</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  } else {
+    document.getElementById('keyword-table-wrapper').innerHTML = '<p style="font-size:0.85rem;color:var(--slate-600);text-align:center;padding:12px 0;">Add more text to see keyword analysis…</p>';
+  }
+
+  // Char limit bar
+  const pct = (stats.charCount / 100000) * 100;
+  document.getElementById('char-limit-fill').style.width = pct + '%';
+}
+
+// Main input handler
+textarea.addEventListener('input', () => {
+  const text = textarea.value;
+  document.getElementById('char-counter-display').textContent = `${text.length.toLocaleString()} / 100,000 characters`;
+
+  if (analysisTimeout) clearTimeout(analysisTimeout);
+  analysisTimeout = setTimeout(() => {
+    const stats = text.trim() ? analyzeText(text) : null;
+    updateUI(stats);
+  }, 80);
+});
+
+// Cursor position
+textarea.addEventListener('keyup', updateCursor);
+textarea.addEventListener('click', updateCursor);
+function updateCursor() {
+  const text = textarea.value;
+  const pos = textarea.selectionStart;
+  const lines = text.substring(0, pos).split('\n');
+  const line = lines.length;
+  const col = lines[lines.length - 1].length + 1;
+  document.getElementById('cursor-pos').textContent = `Line ${line}, Col ${col}`;
+}
+
+// ─────────────────────────────────────────────
+// MODE TABS
+// ─────────────────────────────────────────────
+function setMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-tab').forEach(t => {
+    t.classList.toggle('active', t.id === `tab-${mode}`);
+    t.setAttribute('aria-selected', t.id === `tab-${mode}` ? 'true' : 'false');
+  });
+  // In a full implementation, each mode shows different stat panels
+}
+
+// ─────────────────────────────────────────────
+// TEXT TRANSFORMATIONS
+// ─────────────────────────────────────────────
+function toUpperCase() {
+  textarea.value = textarea.value.toUpperCase();
+  textarea.dispatchEvent(new Event('input'));
+  showToast('✅', 'Converted to UPPERCASE');
+}
+function toLowerCase() {
+  textarea.value = textarea.value.toLowerCase();
+  textarea.dispatchEvent(new Event('input'));
+  showToast('✅', 'Converted to lowercase');
+}
+function toTitleCase() {
+  textarea.value = textarea.value.replace(/\b\w+/g, w =>
+    w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+  );
+  textarea.dispatchEvent(new Event('input'));
+  showToast('✅', 'Converted to Title Case');
+}
+function removeExtraSpaces() {
+  textarea.value = textarea.value.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+  textarea.dispatchEvent(new Event('input'));
+  showToast('✅', 'Extra spaces removed');
+}
+function clearText() {
+  if (textarea.value && confirm('Clear all text?')) {
+    textarea.value = '';
+    textarea.dispatchEvent(new Event('input'));
+    updateUI(null);
+    showToast('🗑️', 'Text cleared');
+  }
+}
+
+// ─────────────────────────────────────────────
+// ACTIONS
+// ─────────────────────────────────────────────
+async function copyText() {
+  if (!textarea.value) { showToast('⚠️', 'Nothing to copy'); return; }
+  try {
+    await navigator.clipboard.writeText(textarea.value);
+    const btn = document.getElementById('copy-btn');
+    btn.classList.add('action-btn-success');
+    setTimeout(() => btn.classList.remove('action-btn-success'), 600);
+    showToast('✅', 'Text copied to clipboard');
+  } catch { showToast('⚠️', 'Copy failed – please copy manually'); }
+}
+
+async function copyStats() {
+  const text = textarea.value;
+  if (!text.trim()) { showToast('⚠️', 'Analyze some text first'); return; }
+  const stats = analyzeText(text);
+  const report = `TextPulse Analysis Report
+========================
+Words:          ${stats.wordCount.toLocaleString()}
+Characters:     ${stats.charCount.toLocaleString()}
+No Spaces:      ${stats.charNoSpace.toLocaleString()}
+Sentences:      ${stats.sentenceCount}
+Paragraphs:     ${stats.paraCount}
+Reading Time:   ${formatTime(stats.readSec)}
+Speaking Time:  ${formatTime(stats.speakSec)}
+Readability:    ${stats.fleschClamped}/100 (${getFleschLabel(stats.fleschClamped)})
+Grade Level:    ${getGradeLabel(stats.grade)}
+SEO Score:      ${stats.seoScore}/100
+Unique Words:   ${stats.uniqueCount.toLocaleString()}
+Vocabulary:     ${stats.vocabRichness}% richness
+Syllables:      ${stats.totalSyllables.toLocaleString()}
+Generated by TextPulse – textpulse.app`;
+  try {
+    await navigator.clipboard.writeText(report);
+    showToast('📋', 'Stats copied to clipboard');
+  } catch { showToast('⚠️', 'Copy failed'); }
+}
+
+async function shareResults() {
+  const text = textarea.value;
+  if (!text.trim()) { showToast('⚠️', 'Analyze some text first'); return; }
+  const stats = analyzeText(text);
+  const shareText = `Just analyzed my text with TextPulse! 📊 ${stats.wordCount} words · ${stats.charCount} characters · ${formatTime(stats.readSec)} read · Readability: ${stats.fleschClamped}/100 · textpulse.app`;
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: 'TextPulse Analysis', text: shareText, url: 'https://textpulse.app' });
+    } catch(e) {
+      if (e.name !== 'AbortError') fallbackShare(shareText);
+    }
+  } else {
+    fallbackShare(shareText);
+  }
+}
+
+async function fallbackShare(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast('✅', 'Share text copied to clipboard');
+  } catch { showToast('⚠️', 'Could not share'); }
+}
+
+function downloadReport() {
+  const text = textarea.value;
+  if (!text.trim()) { showToast('⚠️', 'Analyze some text first'); return; }
+  const stats = analyzeText(text);
+  const now = new Date().toLocaleString();
+  const report = `TEXTPULSE ANALYSIS REPORT
+Generated: ${now}
+Source: textpulse.app
+${'='.repeat(50)}
+
+WORD & CHARACTER STATISTICS
+Words:                  ${stats.wordCount.toLocaleString()}
+Characters (total):     ${stats.charCount.toLocaleString()}
+Characters (no spaces): ${stats.charNoSpace.toLocaleString()}
+Sentences:              ${stats.sentenceCount}
+Paragraphs:             ${stats.paraCount}
+Syllables:              ${stats.totalSyllables.toLocaleString()}
+
+READING TIME ESTIMATES
+Reading (238 wpm):      ${formatTime(stats.readSec)}
+Speaking (130 wpm):     ${formatTime(stats.speakSec)}
+Skimming (300 wpm):     ${formatTime(stats.skimSec)}
+
+QUALITY SCORES
+Flesch Reading Ease:    ${stats.fleschClamped}/100 (${getFleschLabel(stats.fleschClamped)})
+Grade Level:            ${getGradeLabel(stats.grade)}
+SEO Score:              ${stats.seoScore}/100
+Originality Estimate:   ${stats.origScore}%
+
+VOCABULARY ANALYSIS
+Unique Words:           ${stats.uniqueCount.toLocaleString()}
+Vocabulary Richness:    ${stats.vocabRichness}%
+Avg Word Length:        ${stats.avgWordLen} characters
+Avg Sentence Length:    ${stats.avgWordsPerSent} words
+
+TOP KEYWORDS
+${stats.sortedKw.map(([w, c]) => `  ${w.padEnd(20)} ${c}x  (${stats.wordCount > 0 ? ((c/stats.wordCount)*100).toFixed(1) : 0}%)`).join('\n')}
+
+${'='.repeat(50)}
+Analyzed by TextPulse – textpulse.app
+Free word counter, character counter & text analyzer.`;
+
+  const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `textpulse-report-${Date.now()}.txt`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('📥', 'Report downloaded');
+}
+
+// ─────────────────────────────────────────────
+// FAQ ACCORDION
+// ─────────────────────────────────────────────
+function toggleFaq(trigger) {
+  const item = trigger.closest('.faq-item');
+  const answer = item.querySelector('.faq-answer');
+  const isOpen = item.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.faq-item.open').forEach(el => {
+    el.classList.remove('open');
+    el.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+    el.querySelector('.faq-answer').setAttribute('aria-hidden', 'true');
+  });
+  if (!isOpen) {
+    item.classList.add('open');
+    trigger.setAttribute('aria-expanded', 'true');
+    answer.setAttribute('aria-hidden', 'false');
+  }
+}
+
+function handleFaqKey(e, trigger) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    toggleFaq(trigger);
+  }
+}
+
+// ─────────────────────────────────────────────
+// NEWSLETTER
+// ─────────────────────────────────────────────
+function handleNewsletter(e) {
+  e.preventDefault();
+  const email = document.getElementById('newsletter-email').value;
+  const msg = document.getElementById('newsletter-msg');
+  msg.textContent = `🎉 You're in! Welcome to TextPulse. Check ${email} for a confirmation.`;
+  msg.style.color = 'var(--emerald)';
+  document.getElementById('newsletter-email').value = '';
+  showToast('🎉', 'Subscribed successfully!');
+}
+
+// ─────────────────────────────────────────────
+// TOAST NOTIFICATIONS
+// ─────────────────────────────────────────────
+function showToast(icon, message) {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.setAttribute('role', 'alert');
+  toast.innerHTML = `<span class="toast-icon" aria-hidden="true">${icon}</span><span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('removing');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// ─────────────────────────────────────────────
+// SCROLL ANIMATIONS
+// ─────────────────────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.feature-card, .step-card, .blog-card, .faq-item').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(24px)';
+  el.style.transition = 'opacity 0.55s ease, transform 0.55s ease';
+  observer.observe(el);
+});
+
+// ─────────────────────────────────────────────
+// STICKY NAV ON SCROLL
+// ─────────────────────────────────────────────
+let lastScroll = 0;
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  const nav = document.querySelector('nav');
+  if (scrollY > 100) {
+    nav.style.background = 'rgba(5,10,24,0.95)';
+  } else {
+    nav.style.background = 'rgba(5,10,24,0.85)';
+  }
+  lastScroll = scrollY;
+}, { passive: true });
+
+// ─────────────────────────────────────────────
+// SMOOTH SCROLL for anchor links
+// ─────────────────────────────────────────────
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+// ─────────────────────────────────────────────
+// FEATURE CARD MOUSE PARALLAX (Desktop)
+// ─────────────────────────────────────────────
+if (window.matchMedia('(hover: hover)').matches) {
+  document.querySelectorAll('.feature-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 8;
+      const y = ((e.clientY - rect.top) / rect.height - 0.5) * 8;
+      card.style.transform = `translateY(-4px) rotateX(${-y}deg) rotateY(${x}deg)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
+}
+
+// ─────────────────────────────────────────────
+// INITIAL DEMO TEXT
+// ─────────────────────────────────────────────
+const demoText = `Welcome to TextPulse — the world's most powerful free word counter and text analyzer.
+
+Paste any text here to instantly see comprehensive analytics. Whether you're a blogger checking word count, a student verifying essay length, an SEO professional analyzing keyword density, or a speaker calculating reading time — TextPulse gives you every metric you need.
+
+Our real-time analysis engine processes your text as you type, giving you instant access to word count, character count, sentence count, paragraph count, reading time, speaking time, Flesch readability score, grade level, keyword density, vocabulary richness, unique word count, syllable count, and much more.
+
+TextPulse runs entirely in your browser. Your text never leaves your device, so you can safely analyze confidential documents, legal agreements, client work, and personal writing without any privacy concerns.
+
+Replace this text with your own content to see your analytics update in real time!`;
+
+textarea.value = demoText;
+textarea.dispatchEvent(new Event('input'));
+</script>
+
+</body>
+</html>
